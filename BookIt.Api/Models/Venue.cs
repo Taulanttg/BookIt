@@ -7,5 +7,8 @@
         public string City { get; set; } = "Suhareke";
         public string Address { get; set; } = "Rruga Skenderbeu";
         public string? Description { get; set; } = "Atmosferë e ngrohtë familjare, specializohet me kafe, pije të ftohta dhe ushqim.";
+
+        public List<Table> Tables { get; set; } = new();
+        public List<Event> Events { get; set; } = new();
     }
 }
