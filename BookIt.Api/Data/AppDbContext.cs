@@ -11,5 +11,7 @@ namespace BookIt.Api.Data
 
         public DbSet<Models.Table> Tables { get; set; } = null!;
         public DbSet<Models.Event> Events { get; set; } = null!;
+
+        public DbSet<Models.Reservation> Reservations { get; set; } = null!;
     }
 }
