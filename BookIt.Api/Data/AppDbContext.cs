@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BookIt.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookIt.Api.Data
 {
@@ -13,5 +14,14 @@ namespace BookIt.Api.Data
         public DbSet<Models.Event> Events { get; set; } = null!;
 
         public DbSet<Models.Reservation> Reservations { get; set; } = null!;
+
+        public DbSet<User> Users { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+        }
     }
 }
