@@ -88,6 +88,9 @@ public class ReservationsController : ControllerBase
                 return BadRequest($"Nuk ka vende te majaftueshme. Mbeten {remaining} vende.");
         }
 
+        if (reservation.ReservationDate < DateTime.Now)
+            return BadRequest("Nuk mund te rezervosh per te kaluaren.");
+
         _context.Reservations.Add(reservation);
         await _context.SaveChangesAsync();
         return Ok(reservation);
