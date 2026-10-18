@@ -2,6 +2,7 @@
 using BookIt.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookIt.Api.Controllers;
 
@@ -35,6 +36,7 @@ public class ReservationsController : ControllerBase
     }
 
     //CreateReservation Metoda
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<Reservation>> CreateReservation(Reservation reservation)
     {
