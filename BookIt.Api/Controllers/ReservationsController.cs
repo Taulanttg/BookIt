@@ -43,7 +43,7 @@ public class ReservationsController : ControllerBase
         if (reservation.EventId == 0)
             reservation.EventId = null;
 
-        // Kontrollo që lidhjet ekzistojnë dhe jep mesazh të qartë
+        // Kontrollo që lidhjet ekzistojnë
         if (!await _context.Venues.AnyAsync(v => v.Id == reservation.VenueId))
             return BadRequest($"Vendi me id {reservation.VenueId} nuk ekziston.");
 
@@ -54,6 +54,23 @@ public class ReservationsController : ControllerBase
         if (reservation.EventId != null &&
             !await _context.Events.AnyAsync(e => e.Id == reservation.EventId))
             return BadRequest($"Eventi me id {reservation.EventId} nuk ekziston.");
+
+        // Rregullat për tavolinën
+        if (reservation.TableId != null)
+        {
+            var table = await _context.Tables.FindAsync(reservation.TableId);
+
+            if (reservation.Guests > table!.Capacity)
+                return BadRequest($"Tavolina ka vetëm {table.Capacity} vende, ti kërkove {reservation.Guests}.");
+
+            bool taken = await _context.Reservations.AnyAsync(r =>
+                r.TableId == reservation.TableId &&
+                r.ReservationDate == reservation.ReservationDate &&
+                r.Status != "Cancelled");
+
+            if (taken)
+                return BadRequest("Kjo tavolinë është e rezervuar tashmë në këtë orar.");
+        }
 
         _context.Reservations.Add(reservation);
         await _context.SaveChangesAsync();
