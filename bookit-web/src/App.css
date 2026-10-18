@@ -36,3 +36,13 @@
 .message {
   font-weight: bold;
 }
+
+#root {
+  display: block;
+  padding: 24px;
+  border-inline: none;
+}
+
+.grid {
+  margin-bottom: 32px;
+}
