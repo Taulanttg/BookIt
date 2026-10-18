@@ -33,6 +33,8 @@ public class ReservationsController : ControllerBase
 
         return Ok(reservation);
     }
+
+    //CreateReservation Metoda
     [HttpPost]
     public async Task<ActionResult<Reservation>> CreateReservation(Reservation reservation)
     {
@@ -70,6 +72,20 @@ public class ReservationsController : ControllerBase
 
             if (taken)
                 return BadRequest("Kjo tavolinë është e rezervuar tashmë në këtë orar.");
+        }
+
+        if (reservation.EventId != null) 
+        {
+            var ev = await _context.Events.FindAsync(reservation.EventId);
+
+            int booked = await _context.Reservations
+                .Where(r => r.EventId == reservation.EventId && r.Status != "Cancelled")
+                .SumAsync(r => r.Guests);
+
+            int remaining = ev!.TotalSeats - booked;
+
+            if (reservation.Guests > remaining)
+                return BadRequest($"Nuk ka vende te majaftueshme. Mbeten {remaining} vende.");
         }
 
         _context.Reservations.Add(reservation);
