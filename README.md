@@ -147,3 +147,4 @@ The API address is defined at the top of `src/App.jsx` and `src/Auth.jsx` (`http
 
 **Taulant Gashi**
 GitHub: [@Taulanttg](https://github.com/Taulanttg)
+Email: taulantgashi004@gmail.com
