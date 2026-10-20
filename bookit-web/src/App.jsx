@@ -20,7 +20,9 @@ function App() {
   const [message, setMessage] = useState('')
 
   const [token, setToken] = useState(localStorage.getItem('token'))
-const [userName, setUserName] = useState(localStorage.getItem('fullName'))
+  const [userName, setUserName] = useState(localStorage.getItem('fullName'))
+  const [myReservations, setMyReservations] = useState([])
+  const [showMy, setShowMy] = useState(false)
 
 function handleLogin(data) {
   localStorage.setItem('token', data.token)
@@ -35,6 +37,23 @@ function handleLogout() {
   localStorage.removeItem('fullName')
   setToken(null)
   setUserName(null)
+  setShowMy(false)
+}
+
+async function loadMyReservations() {
+  const response = await fetch(`${API}/Reservations/my`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  if (response.status === 401) {
+    handleLogout()
+    setMessage('Sesioni ka skaduar. Hyr përsëri.')
+    return
+  }
+
+  const data = await response.json()
+  setMyReservations(data)
+  setShowMy(true)
 }
 
   useEffect(() => {
@@ -121,11 +140,38 @@ function handleLogout() {
       {token ? (
         <p>
           Përshëndetje, {userName}!{' '}
+          <button onClick={loadMyReservations}>Rezervimet e mia</button>{' '}
           <button onClick={handleLogout}>Dil</button>
         </p>
       ) : (
         <Auth onLogin={handleLogin} />
       )}
+
+  {showMy && (
+    <div>
+      <h2>Rezervimet e mia</h2>
+
+      {myReservations.length === 0 && <p>Nuk ke rezervime ende.</p>}
+
+      <div className="grid">
+        {myReservations.map((r) => (
+          <div className="card" key={r.id}>
+            <h3>{venues.find((v) => v.id === r.venueId)?.name}</h3>
+            <p>
+              {r.tableId
+                ? `Tavolina: ${tables.find((t) => t.id === r.tableId)?.name}`
+                : `Eventi: ${events.find((e) => e.id === r.eventId)?.name}`}
+            </p>
+            <p>Data: {new Date(r.reservationDate).toLocaleString()}</p>
+            <p>Persona: {r.guests}</p>
+            <p>Statusi: {r.status}</p>
+          </div>
+        ))}
+      </div>
+
+      <button onClick={() => setShowMy(false)}>Mbyll</button>
+    </div>
+  )}
 
       {message && <p className="message">{message}</p>}
 
