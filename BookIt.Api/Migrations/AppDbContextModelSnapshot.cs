@@ -97,6 +97,9 @@ namespace BookIt.Api.Migrations
                     b.Property<int?>("TableId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("VenueId")
                         .HasColumnType("int");
 
@@ -105,6 +108,8 @@ namespace BookIt.Api.Migrations
                     b.HasIndex("EventId");
 
                     b.HasIndex("TableId");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("VenueId");
 
@@ -220,6 +225,10 @@ namespace BookIt.Api.Migrations
                         .WithMany()
                         .HasForeignKey("TableId");
 
+                    b.HasOne("BookIt.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.HasOne("BookIt.Api.Models.Venue", "Venue")
                         .WithMany()
                         .HasForeignKey("VenueId")
@@ -229,6 +238,8 @@ namespace BookIt.Api.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Table");
+
+                    b.Navigation("User");
 
                     b.Navigation("Venue");
                 });

@@ -3,6 +3,8 @@ using BookIt.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace BookIt.Api.Controllers;
 
@@ -90,8 +92,13 @@ public class ReservationsController : ControllerBase
                 return BadRequest($"Nuk ka vende te majaftueshme. Mbeten {remaining} vende.");
         }
 
+        // Mos lejo rezervime për të kaluarën
         if (reservation.ReservationDate < DateTime.Now)
             return BadRequest("Nuk mund te rezervosh per te kaluaren.");
+
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        reservation.UserId = userId;
+
 
         _context.Reservations.Add(reservation);
         await _context.SaveChangesAsync();
