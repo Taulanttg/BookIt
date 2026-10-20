@@ -37,6 +37,19 @@ public class ReservationsController : ControllerBase
         return Ok(reservation);
     }
 
+    [Authorize]
+    [HttpGet("my")]
+    public async Task<ActionResult<List<Reservation>>> GetMyReservations()
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var reservations = await _context.Reservations
+            .Where(r => r.UserId == userId)
+            .ToListAsync();
+
+        return Ok(reservations);
+    }
+
     //CreateReservation Metoda
     [Authorize]
     [HttpPost]

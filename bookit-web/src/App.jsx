@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import Auth from './Auth'
 
 const API = 'https://localhost:7212/api'
 
@@ -17,6 +18,24 @@ function App() {
   const [tableId, setTableId] = useState('')
   const [reservationDate, setReservationDate] = useState('')
   const [message, setMessage] = useState('')
+
+  const [token, setToken] = useState(localStorage.getItem('token'))
+const [userName, setUserName] = useState(localStorage.getItem('fullName'))
+
+function handleLogin(data) {
+  localStorage.setItem('token', data.token)
+  localStorage.setItem('fullName', data.fullName)
+  setToken(data.token)
+  setUserName(data.fullName)
+  setMessage('')
+}
+
+function handleLogout() {
+  localStorage.removeItem('token')
+  localStorage.removeItem('fullName')
+  setToken(null)
+  setUserName(null)
+}
 
   useEffect(() => {
     fetch(`${API}/Venues`)
@@ -45,13 +64,18 @@ function App() {
   async function sendReservation(body) {
     const response = await fetch(`${API}/Reservations`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(body),
     })
-
+  
     if (response.ok) {
       setMessage('Rezervimi u krye me sukses!')
       resetForm()
+    } else if (response.status === 401) {
+      setMessage('Duhet të hysh në llogari për të rezervuar.')
     } else {
       const errorText = await response.text()
       setMessage(errorText)
@@ -93,6 +117,15 @@ function App() {
   return (
     <div>
       <h1>BookIt</h1>
+
+      {token ? (
+        <p>
+          Përshëndetje, {userName}!{' '}
+          <button onClick={handleLogout}>Dil</button>
+        </p>
+      ) : (
+        <Auth onLogin={handleLogin} />
+      )}
 
       {message && <p className="message">{message}</p>}
 
